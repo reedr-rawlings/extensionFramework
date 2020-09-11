@@ -130,6 +130,68 @@ export const ApiFunctions: React.FC<ApiFunctionsProps> = () => {
     history.push(`${ROUTES.CORESDK_ROUTE}?test=abcd`, { count: 1 })
   }
 
+  const getUserAttributeClick = async () => {
+    try {
+      const value = await extensionSDK.userAttributeGetItem('user_value')
+      updateMessages(`User attribute 'user_value' is ${value}`)
+    } catch (error) {
+      const name = `${extensionSDK.lookerHostData?.extensionId.replace('::', '_')}_user_value`
+      updateMessages(`Create a user attribute named "${name}" and reload to use this attribute`)
+      console.error(error)
+    }
+    try {
+      const value = await extensionSDK.userAttributeGetItem('locale')
+      updateMessages(`User attribute 'locale' is ${value}`)
+    } catch (error) {
+      updateMessages(error)
+      console.error(error)
+    }
+  }
+
+  const setUserAttributeClick = async () => {
+    try {
+      const value = await extensionSDK
+        .userAttributeSetItem('user_value', new Date().toString())
+      if (value) {
+        updateMessages(`Updated 'user_value' to '${value}'`)
+      }
+    } catch (error) {
+        const name = `${extensionSDK.lookerHostData?.extensionId.replace('::', '_')}_user_value`
+        updateMessages(`Create a user attribute named "${name}" and reload to use this attribute`)
+        console.error(error)
+    }
+    // This will fail because global user attributes cannot by modified by an extension
+    try {
+      const timestamp = new Date().toString()
+      const value = await extensionSDK.userAttributeSetItem('locale', timestamp)
+      if (value) {
+        updateMessages(`Updated 'locale' to '${timestamp}'`)
+      }
+    } catch (error) {
+      updateMessages(error)
+      console.error(error)
+    }
+  }
+
+  const resetUserAttributeClick = async () => {
+    try {
+      await extensionSDK.userAttributeResetItem('user_value')
+      updateMessages(`Reset 'user_value' to default`)
+    } catch (error) {
+      const name = `${extensionSDK.lookerHostData?.extensionId.replace('::', '_')}_user_value`
+      updateMessages(`Create a user attribute named "${name}" and reload to use this attribute`)
+      console.error(error)
+    }
+    // This will fail because global user attributes cannot by modified by an extension
+    try {
+      await extensionSDK.userAttributeResetItem('locale')
+      updateMessages(`Reset 'locale' default`)
+    } catch (error) {
+      updateMessages(error)
+      console.error(error)
+    }
+  }
+
   const clearMessagesClick = () => {
     setMessages('')
   }
@@ -212,6 +274,27 @@ export const ApiFunctions: React.FC<ApiFunctionsProps> = () => {
           </ExtensionButton>
           <ExtensionButton mt="small" variant="outline" onClick={testRouting}>
             Route test
+          </ExtensionButton>
+          <ExtensionButton
+            mt="small"
+            variant="outline"
+            onClick={getUserAttributeClick}
+          >
+            Get User Attribute
+          </ExtensionButton>
+          <ExtensionButton
+            mt="small"
+            variant="outline"
+            onClick={setUserAttributeClick}
+          >
+            Set User Attribute
+          </ExtensionButton>
+          <ExtensionButton
+            mt="small"
+            variant="outline"
+            onClick={resetUserAttributeClick}
+          >
+            Reset User Attribute
           </ExtensionButton>
           <ExtensionButton
             mt="small"
