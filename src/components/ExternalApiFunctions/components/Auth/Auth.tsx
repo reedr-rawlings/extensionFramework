@@ -74,7 +74,7 @@ export const Auth: React.FC<AuthProps> = ({ dataState, dataDispatch }) => {
 
   // React router setup
   const history = useHistory()
-  const location = useLocation()
+  const location = useLocation<any>()
 
   // Component data state
   const { name } = dataState
@@ -93,8 +93,7 @@ export const Auth: React.FC<AuthProps> = ({ dataState, dataDispatch }) => {
         )
         return
       }
-      const { authOption, accessToken, jwtToken } =
-        (location.state as any) || {}
+      const { authOption, accessToken, jwtToken } = location.state || {}
       if (jwtToken) {
         // Got jwt token, check its still valid
         const isAuthorized = await dataServerAuthCheck()
@@ -185,7 +184,7 @@ export const Auth: React.FC<AuthProps> = ({ dataState, dataDispatch }) => {
   // Toggle to change authorization. If logged in, the user is logged out.
   // If not logged in, the authorize choice dialog is displayed.
   const changeAuthorization = async () => {
-    const { jwtToken } = (location.state as any) || {}
+    const { jwtToken } = location.state || {}
     updateErrorMessage(dataDispatch, undefined)
     if (jwtToken) {
       initializeState(dataDispatch)
@@ -569,7 +568,7 @@ export const Auth: React.FC<AuthProps> = ({ dataState, dataDispatch }) => {
 
   // Create message describing what kind of authorization is in use
   let authMessage = ''
-  const { jwtToken, authOption } = (location.state as any) || {}
+  const { jwtToken, authOption } = location.state || {}
   if (jwtToken) {
     switch (authOption) {
       case AuthOption.Google:
